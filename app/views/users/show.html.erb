@@ -1,0 +1,28 @@
+<div style="max-width: 700px; margin: 30px auto; padding: 0 15px;">
+  <div style="border: 1px solid #ccc; padding: 20px; margin-bottom: 25px; border-radius: 10px; background: #f9f9f9;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
+      <div>
+        <h1 style="margin: 0 0 10px 0;">@<%= @user.username %></h1>
+        <p style="margin: 0 0 10px 0; color: #666;"><%= @user.email %></p>
+      </div>
+
+    <div style="margin-top: 20px;">
+      <h2 style="margin-bottom: 10px;">О себе</h2>
+      <p style="margin: 0; line-height: 1.5;">
+        <%= @user.bio.present? ? @user.bio : "Пользователь пока не добавил описание." %>
+      </p>
+    </div>
+  </div>
+
+  <div>
+    <h2 style="margin-bottom: 15px;">Посты</h2>
+
+    <% if @posts.any? %>
+      <%= render @posts %>
+    <% else %>
+      <div style="text-align: center; padding: 30px 0; color: #666;">
+        <p>У пользователя пока нет постов</p>
+      </div>
+    <% end %>
+  </div>
+</div>

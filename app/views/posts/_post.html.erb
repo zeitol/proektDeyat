@@ -1,0 +1,14 @@
+<div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 10px; background: white;">
+  <div style="margin-bottom: 8px;">
+    <strong>
+      <%= link_to "@#{post.user.username}", user_path(post.user), style: "text-decoration: none; color: black;" %>
+    </strong>
+    <span style="color: #666; margin-left: 8px;">
+      · <%= time_ago_in_words(post.created_at) %> ago
+    </span>
+  </div>
+
+  <div style="white-space: pre-line; line-height: 1.5;">
+    <%= post.content %>
+  </div>
+</div>

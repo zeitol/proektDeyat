@@ -1,0 +1,38 @@
+<div style="max-width: 400px; margin: 60px auto;">
+  <h2 style="text-align: center;">Sign up</h2>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div style="margin-bottom: 15px;">
+      <p><%= f.label :username, "Username" %></p>
+      <p><%= f.text_field :username, autofocus: true, autocomplete: "username", style: "width: 100%; padding: 8px;" %></p>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <p><%= f.label :email %></p>
+      <p><%= f.email_field :email, autocomplete: "email", style: "width: 100%; padding: 8px;" %></p>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <p><%= f.label :password %></p>
+      <% if @minimum_password_length %>
+        <p><em>(<%= @minimum_password_length %> characters minimum)</em></p>
+      <% end %>
+      <p><%= f.password_field :password, autocomplete: "new-password", style: "width: 100%; padding: 8px;" %></p>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <p><%= f.label :password_confirmation %></p>
+      <p><%= f.password_field :password_confirmation, autocomplete: "new-password", style: "width: 100%; padding: 8px;" %></p>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <%= f.submit "Sign up", style: "padding: 8px 16px;" %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 20px;">
+    <%= render "devise/shared/links" %>
+  </div>
+</div>
