@@ -1,18 +1,44 @@
 <div style="max-width: 700px; margin: 30px auto; padding: 0 15px;">
   <div style="border: 1px solid #ccc; padding: 20px; margin-bottom: 25px; border-radius: 10px; background: #f9f9f9;">
+    
+    <%# --- ЭТОТ БЛОК ОТВЕЧАЕТ ЗА ШАПКУ ПРОФИЛЯ (Аватарка + Имя + Кнопка) --- %>
     <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
-      <div>
-        <h1 style="margin: 0 0 10px 0;">@<%= @user.username %></h1>
-        <p style="margin: 0 0 10px 0; color: #666;"><%= @user.email %></p>
+      
+      <%# Левая часть: Аватарка и текстовые данные %>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <% if @user.avatar.attached? %>
+          <%# Если аватарка загружена — показываем её %>
+          <%= image_tag @user.avatar, style: "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc; flex-shrink: 0;" %>
+        <% else %>
+          <%# Если аватарки нет — показываем серую заглушку с первой буквой ника %>
+          <div style="width: 100px; height: 100px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #777; border: 2px solid #ccc; flex-shrink: 0;">
+            <%= @user.username.first.upcase %>
+          </div>
+        <% end %>
+
+        <div>
+          <h1 style="margin: 0 0 5px 0;">@<%= @user.username %></h1>
+          <p style="margin: 0; color: #666;"><%= @user.email %></p>
+        </div>
       </div>
 
-    <div style="margin-top: 20px;">
-      <h2 style="margin-bottom: 10px;">О себе</h2>
-      <p style="margin: 0; line-height: 1.5;">
+      <%# Правая часть: Кнопка редактирования %>
+      <% if @user == current_user %>
+        <div>
+          <%= link_to "Редактировать профиль", edit_user_path(@user), style: "background: #1da1f2; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
+        </div>
+      <% end %>
+    </div> <%# Контурный тег закрывает flex-блок шапки (исправлено!) %>
+
+    <%# --- БЛОК О СЕБЕ --- %>
+    <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+      <h2 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #333;">О себе</h2>
+      <p style="margin: 0; line-height: 1.5; color: #444;">
         <%= @user.bio.present? ? @user.bio : "Пользователь пока не добавил описание." %>
       </p>
     </div>
-  </div>
+
+  </div> <%# Закрывает серую карточку профиля %>
 
   <div>
     <h2 style="margin-bottom: 15px;">Посты</h2>

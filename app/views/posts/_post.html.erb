@@ -1,14 +1,38 @@
-<div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 10px; background: white;">
-  <div style="margin-bottom: 8px;">
-    <strong>
-      <%= link_to "@#{post.user.username}", user_path(post.user), style: "text-decoration: none; color: black;" %>
-    </strong>
-    <span style="color: #666; margin-left: 8px;">
-      · <%= time_ago_in_words(post.created_at) %> ago
-    </span>
+<%# app/views/posts/_post.html.erb %>
+
+<div style="display: flex; gap: 12px; padding: 15px; border-bottom: 1px solid #eee; background: white; border-radius: 8px; margin-bottom: 10px; font-family: sans-serif;">
+  
+  <%# 1. КОЛОНКА С АВАТАРКОЙ (слева) %>
+  <div style="flex-shrink: 0;">
+    <%= link_to user_path(post.user) do %>
+      <% if post.user.avatar.attached? %>
+        <%# Отображаем реальную аватарку %>
+        <%= image_tag post.user.avatar, style: "width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;" %>
+      <% else %>
+        <%# Отображаем заглушку, если пользователь не загрузил фото %>
+        <div style="width: 40px; height: 40px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #777; border: 1px solid #eee;">
+          <%= post.user.username.first.upcase %>
+        </div>
+      <% end %>
+    <% end %>
   </div>
 
-  <div style="white-space: pre-line; line-height: 1.5;">
-    <%= post.content %>
+  <%# 2. КОЛОНКА С ТЕКСТОМ ПОСТА (справа) %>
+  <div style="flex-grow: 1;">
+    <%# Имя пользователя и дата %>
+    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+      <%= link_to user_path(post.user), style: "text-decoration: none; color: black; font-weight: bold;" do %>
+        @<%= post.user.username %>
+      <% end %>
+      <span style="color: #666; font-size: 0.9rem;">
+        · <%= time_ago_in_words(post.created_at) %> назад
+      </span>
+    </div>
+
+    <%# Сам текст поста %>
+    <div style="line-height: 1.4; color: #333; word-break: break-word;">
+      <%= post.content %>
+    </div>
   </div>
+
 </div>
