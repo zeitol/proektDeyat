@@ -1,15 +1,23 @@
 class PostsController < ApplicationController
-  before_action :authenticate_user!, except: [:index]
+  # Разрешаем неавторизованным пользователям смотреть ленту (:index) и сам пост (:show)
+  before_action :authenticate_user!, except: [:index, :show]
+  # Находим пост для редактирования, обновления и удаления
+  before_action :set_post, only: [:edit, :update, :destroy]
+  # Защита автора поста
+  before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
     @post = Post.new
-    # Чистый современный синтаксис Rails для вложенных связей:
-    @posts = Post.includes(user: :avatar_attachment).order(created_at: :desc)
+    @posts = Post.includes(:comments, user: :avatar_attachment).order(created_at: :desc)
+  end
+
+  # МЕТОД SHOW ТЕПЕРЬ ТУТ (Внутри класса и с правильной подгрузкой комментов)
+  def show
+    @post = Post.includes(comments: :user).find(params[:id])
   end
 
   def create
     @post = current_user.posts.build(post_params)
-    # Такой же чистый синтаксис здесь:
     @posts = Post.includes(user: :avatar_attachment).order(created_at: :desc)
 
     if @post.save
@@ -19,7 +27,33 @@ class PostsController < ApplicationController
     end
   end
 
+  def edit
+  end
+
+  def update
+    if @post.update(post_params)
+      redirect_to root_path, notice: "Пост успешно обновлен"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @post.destroy
+    redirect_to root_path, notice: "Пост удален", status: :see_other
+  end
+
   private
+
+  def set_post
+    @post = Post.find(params[:id])
+  end
+
+  def ensure_correct_user
+    unless @post.user == current_user
+      redirect_to root_path, alert: "Вы не являетесь автором этого поста!"
+    end
+  end
 
   def post_params
     params.require(:post).permit(:content)

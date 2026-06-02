@@ -1,0 +1,28 @@
+<%# app/views/posts/edit.html.erb %>
+
+<div style="max-width: 600px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background: #f9f9f9; font-family: sans-serif;">
+  <h2 style="margin-bottom: 20px;">Редактировать публикацию</h2>
+
+  <% if @post.errors.any? %>
+    <div style="border: 1px solid #e57373; background: #fdecea; padding: 12px; margin-bottom: 15px; border-radius: 8px; color: red;">
+      <h3 style="margin-top: 0;">Ошибки при сохранении:</h3>
+      <ul>
+        <% @post.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with(model: @post, local: true) do |form| %>
+    <div style="margin-bottom: 15px;">
+      <%= form.label :content, "Изменить текст поста", style: "display: block; font-weight: bold; margin-bottom: 8px;" %>
+      <%= form.text_area :content, rows: 4, style: "width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ccc; box-sizing: border-box; font-size: 16px; resize: none;" %>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <%= link_to "Отмена", root_path, style: "background: #ccc; color: #333; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.9rem;" %>
+      <%= form.submit "Сохранить изменения", style: "background: #1da1f2; color: white; padding: 10px 20px; border: none; border-radius: 20px; font-weight: bold; font-size: 0.9rem; cursor: pointer;" %>
+    </div>
+  <% end %>
+</div>
