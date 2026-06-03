@@ -1,4 +1,6 @@
-<div style="max-width: 700px; margin: 30px auto; padding: 0 15px;">
+<%# app/views/posts/index.html.erb %>
+
+<div style="max-width: 700px; margin: 30px auto; padding: 0 15px; font-family: sans-serif;">
 
   <% if user_signed_in? %>
     <div style="border: 1px solid #ccc; padding: 20px; margin-bottom: 25px; border-radius: 10px; background: #f9f9f9;">
@@ -39,9 +41,42 @@
     </div>
   <% end %>
 
+  <%# --- ЛЕНТА ПОСТОВ С ПАГИНАЦИЕЙ --- %>
   <div id="feed">
     <% if @posts.present? %>
       <%= render @posts %>
+
+      <%# --- БЛОК КНОПОК ПАГИНАЦИИ --- %>
+      <div style="margin-top: 30px; margin-bottom: 30px; display: flex; justify-content: center;">
+        <div class="pagination-container" style="display: flex; gap: 8px; align-items: center;">
+          <%= paginate @posts, window: 2 %>
+        </div>
+      </div>
+      
+      <%# Кастомные инлайн-стили для элементов kaminari %>
+      <style>
+        .pagination-container a, .pagination-container .current {
+          padding: 8px 14px;
+          border: 1px solid #ccc;
+          border-radius: 20px;
+          text-decoration: none;
+          color: #1da1f2;
+          font-weight: bold;
+          font-size: 0.9rem;
+        }
+        .pagination-container .current {
+          background: #1da1f2;
+          color: white;
+          border-color: #1da1f2;
+        }
+        .pagination-container .disabled, .pagination-container .gap {
+          padding: 8px 14px;
+          color: #999;
+          font-size: 0.9rem;
+        }
+      </style>
+      <%# ----------------------------- %>
+
     <% else %>
       <div style="text-align: center; padding: 40px 0; color: #666;">
         <p style="font-size: 22px; margin-bottom: 10px;">Пока нет постов</p>

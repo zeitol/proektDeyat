@@ -68,3 +68,4 @@ end
 gem 'devise'               
 gem 'tailwindcss-rails'       
 gem 'pagy'                     
+gem 'kaminari'

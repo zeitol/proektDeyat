@@ -6,7 +6,11 @@ class UsersController < ApplicationController
   before_action :ensure_correct_user, only: [:edit, :update]
 
   def show
-    @posts = @user.posts.order(created_at: :desc)
+    @posts = @user.posts
+                  .includes(:comments, :likes, user: :avatar_attachment)
+                  .order(created_at: :desc)
+                  .page(params[:page])
+                  .per(10)
   end
 
   def edit
@@ -27,14 +31,12 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
-  # Защита: не даем редактировать чужие профили через URL
   def ensure_correct_user
     unless current_user == @user
       redirect_to root_path, alert: "У вас нет прав для редактирования этого профиля."
     end
   end
 
-  # Разрешаем изменять только поле bio
   def user_params
     params.require(:user).permit(:bio, :avatar) 
   end

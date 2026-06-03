@@ -40,11 +40,44 @@
 
   </div> <%# Закрывает серую карточку профиля %>
 
+<%# --- ЛЕНТА ПОСТОВ ПОЛЬЗОВАТЕЛЯ --- %>
   <div>
-    <h2 style="margin-bottom: 15px;">Посты</h2>
+    <h2 style="margin-bottom: 15px;">Посты пользователя</h2>
 
     <% if @posts.any? %>
       <%= render @posts %>
+
+      <%# --- БЛОК ПАГИНАЦИИ В ПРОФИЛЕ --- %>
+      <div style="margin-top: 30px; margin-bottom: 30px; display: flex; justify-content: center; font-family: sans-serif;">
+        <div class="pagination-container" style="display: flex; gap: 8px; align-items: center;">
+          <%= paginate @posts, window: 2 %>
+        </div>
+      </div>
+      
+      <%# Стили для кнопок (если они еще не добавлены в общий CSS) %>
+      <style>
+        .pagination-container a, .pagination-container .current {
+          padding: 8px 14px;
+          border: 1px solid #ccc;
+          border-radius: 20px;
+          text-decoration: none;
+          color: #1da1f2;
+          font-weight: bold;
+          font-size: 0.9rem;
+        }
+        .pagination-container .current {
+          background: #1da1f2;
+          color: white;
+          border-color: #1da1f2;
+        }
+        .pagination-container .disabled, .pagination-container .gap {
+          padding: 8px 14px;
+          color: #999;
+          font-size: 0.9rem;
+        }
+      </style>
+      <%# -------------------------------- %>
+
     <% else %>
       <div style="text-align: center; padding: 30px 0; color: #666;">
         <p>У пользователя пока нет постов</p>

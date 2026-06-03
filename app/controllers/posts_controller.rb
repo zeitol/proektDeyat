@@ -1,24 +1,20 @@
 class PostsController < ApplicationController
-  # Разрешаем неавторизованным пользователям смотреть ленту (:index) и сам пост (:show)
   before_action :authenticate_user!, except: [:index, :show]
-  # Находим пост для редактирования, обновления и удаления
   before_action :set_post, only: [:edit, :update, :destroy]
-  # Защита автора поста
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
     @post = Post.new
-    @posts = Post.includes(:comments, user: :avatar_attachment).order(created_at: :desc)
+    @posts = Post.includes(:comments, :likes, user: :avatar_attachment).order(created_at: :desc).page(params[:page]).per(10)
   end
 
-  # МЕТОД SHOW ТЕПЕРЬ ТУТ (Внутри класса и с правильной подгрузкой комментов)
   def show
     @post = Post.includes(comments: :user).find(params[:id])
   end
 
   def create
     @post = current_user.posts.build(post_params)
-    @posts = Post.includes(user: :avatar_attachment).order(created_at: :desc)
+    @posts = Post.includes(:comments, :likes, user: :avatar_attachment).order(created_at: :desc).page(params[:page]).per(10)
 
     if @post.save
       redirect_to root_path, notice: "Пост опубликован"
