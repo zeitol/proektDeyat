@@ -22,12 +22,29 @@
         </div>
       </div>
 
-      <%# Правая часть: Кнопка редактирования %>
-      <% if @user == current_user %>
-        <div>
+      <%# --- БЛОК МОДЕРАЦИИ ПРОФИЛЯ ДЛЯ АДМИНИСТРАТОРА --- %>
+<% if user_signed_in? && current_user.admin? && current_user != @user %>
+  <div style="margin-top: 15px; padding: 10px; border: 1px dashed #e57373; border-radius: 8px; background: #fdfcea; display: inline-block;">
+    <span style="font-size: 0.85rem; color: #e57373; font-weight: bold; display: block; margin-bottom: 8px;">Модерация аккаунта:</span>
+    
+    <%= link_to "Удалить этот аккаунт навсегда", admin_user_path(@user), 
+                data: { turbo_method: :delete, turbo_confirm: "Вы уверены, что хотите НАВСЕГДА удалить пользователя @#{@user.username} и все его данные (посты, комментарии, лайки)?" }, 
+                style: "background: #e57373; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: bold; display: inline-block; box-shadow: 0 2px 4px rgba(229,115,115,0.3);" %>
+  </div>
+<% end %>
+
+<%# Правая часть: Кнопка редактирования ИЛИ Подписки %>
+      <div>
+        <% if @user == current_user %>
           <%= link_to "Редактировать профиль", edit_user_path(@user), style: "background: #1da1f2; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
-        </div>
-      <% end %>
+        <% elsif user_signed_in? %>
+          <% if current_user.following?(@user) %>
+            <%= link_to "Отписаться", unfollow_user_path(@user), data: { turbo_method: :delete }, style: "background: #e57373; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
+          <% else %>
+            <%= link_to "Подписаться", follow_user_path(@user), data: { turbo_method: :post }, style: "background: #1da1f2; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
+          <% end %>
+        <% end %>
+      </div>
     </div> <%# Контурный тег закрывает flex-блок шапки (исправлено!) %>
 
     <%# --- БЛОК О СЕБЕ --- %>

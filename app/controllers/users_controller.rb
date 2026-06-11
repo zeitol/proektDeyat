@@ -25,10 +25,28 @@ class UsersController < ApplicationController
     end
   end
 
+  def follow
+    @user = User.find(params[:id])
+    current_user.follow(@user)
+    redirect_to user_path(@user), notice: "Вы подписались на @#{@user.username}"
+  end
+
+  def unfollow
+    @user = User.find(params[:id])
+    current_user.unfollow(@user)
+    redirect_to user_path(@user), notice: "Вы отписались от @#{@user.username}"
+  end
+
   private
 
-  def set_user
-    @user = User.find(params[:id])
+def set_user
+    # find_by не вызывает ошибку, а возвращает nil, если пользователь не найден
+    @user = User.find_by(id: params[:id])
+    
+    # Если @user равен nil (пользователь удален), перенаправляем на главную
+    if @user.nil?
+      redirect_to root_path, alert: "Запрашиваемый пользователь не найден или его аккаунт был удален."
+    end
   end
 
   def ensure_correct_user

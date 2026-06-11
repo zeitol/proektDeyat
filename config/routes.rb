@@ -6,5 +6,14 @@ resources :posts, only: [:index, :create, :edit, :update, :destroy, :show] do
   resources :likes, only: [:create, :destroy]
 end
   #resources :posts, only: [:index, :create, :edit, :update, :destroy]
-  resources :users, only: [:show, :edit, :update]
+resources :users, only: [:show, :edit, :update] do
+    member do
+      post 'follow', to: 'users#follow', as: :follow
+      delete 'unfollow', to: 'users#unfollow', as: :unfollow
+    end
+  end
+  namespace :admin do
+    resources :users, only: [:index, :destroy]
+  end
 end
+

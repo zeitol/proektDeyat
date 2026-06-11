@@ -51,11 +51,28 @@
         <% end %>
       </div>
 
-      <%# Кнопки управления справа (только для автора поста) %>
-      <% if user_signed_in? && @post.user == current_user %>
-        <div style="display: flex; gap: 15px; font-size: 0.9rem;">
-          <%= link_to "Редактировать", edit_post_path(@post), style: "color: #1da1f2; text-decoration: none;" %>
-          <%= link_to "Удалить", post_path(@post), data: { turbo_method: :delete, turbo_confirm: "Вы уверены?" }, style: "color: #e57373; text-decoration: none;" %>
+      <%# ИСПРАВЛЕНО: Кнопки управления справа (для автора ИЛИ администратора) %>
+      <% if user_signed_in? %>
+        <div style="display: flex; gap: 15px; font-size: 0.9rem; align-items: center;">
+          
+          <%# Редактировать может только автор %>
+          <% if @post.user == current_user %>
+            <%= link_to "Редактировать", edit_post_path(@post), style: "color: #1da1f2; text-decoration: none;" %>
+          <% end %>
+
+          <%# Удалить может автор или администратор %>
+          <% if @post.user == current_user || current_user.admin? %>
+            <% is_post_moderation = current_user.admin? && @post.user != current_user %>
+            
+            <%= link_to "Удалить", post_path(@post), 
+                        data: { turbo_method: :delete, turbo_confirm: "Вы уверены, что хотите удалить этот пост?" }, 
+                        style: "color: #e57373; text-decoration: none; font-weight: #{is_post_moderation ? 'bold' : 'normal'};" %>
+            
+            <% if is_post_moderation %>
+              <span style="background: #fdecea; color: #e57373; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Модерация</span>
+            <% end %>
+          <% end %>
+
         </div>
       <% end %>
 
@@ -95,10 +112,18 @@
             <div style="flex-grow: 1;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
                 <span style="font-weight: bold; font-size: 0.9rem;">@<%= comment.user.username %></span>
-                <% if user_signed_in? && (comment.user == current_user || @post.user == current_user) %>
-                  <%= link_to "×", post_comment_path(@post, comment), 
-                              data: { turbo_method: :delete, turbo_confirm: "Удалить этот комментарий?" }, 
-                              style: "color: #e57373; text-decoration: none; font-weight: bold; font-size: 1.1rem; line-height: 1;" %>
+                
+                <%# ИСПРАВЛЕНО: Кнопка удаления комментария доступна автору коммента, автору поста ИЛИ админу %>
+                <% if user_signed_in? && (comment.user == current_user || @post.user == current_user || current_user.admin?) %>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <% if current_user.admin? && comment.user != current_user && @post.user != current_user %>
+                      <span style="color: #e57373; font-size: 0.7rem; font-weight: bold; background: #fdecea; padding: 1px 4px; border-radius: 3px;">Админ</span>
+                    <% end %>
+                    
+                    <%= link_to "×", post_comment_path(@post, comment), 
+                                data: { turbo_method: :delete, turbo_confirm: "Удалить этот комментарий?" }, 
+                                style: "color: #e57373; text-decoration: none; font-weight: bold; font-size: 1.1rem; line-height: 1;" %>
+                  </div>
                 <% end %>
               </div>
               <div style="font-size: 0.95rem; color: #333; word-break: break-word;">
@@ -110,5 +135,4 @@
       <% end %>
     </div>
   </div>
-
 </div>

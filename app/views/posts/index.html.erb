@@ -15,6 +15,67 @@
         </div>
       <% end %>
 
+  <%# --- БЛОК ПОИСКА ПОЛЬЗОВАТЕЛЕЙ --- %>
+  <div style="margin-bottom: 25px; font-family: sans-serif;">
+    <%= form_with(url: root_path, method: :get, local: true, style: "display: flex; gap: 10px;") do |f| %>
+      <%# Сохраняем активные фильтры ленты, чтобы поиск их не сбрасывал %>
+      <%= hidden_field_tag :feed_scope, params[:feed_scope] %>
+      <%= hidden_field_tag :sort, params[:sort] %>
+
+      <%= text_field_tag :query, params[:query], placeholder: "Найти пользователя по @username...", 
+                         style: "flex-grow: 1; padding: 12px 20px; border: 1px solid #ccc; border-radius: 25px; font-size: 1rem; outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);" %>
+      
+      <%= f.submit "Поиск", style: "background: #1da1f2; color: white; border: none; padding: 12px 25px; border-radius: 25px; font-size: 1rem; cursor: pointer; font-weight: bold;" %>
+      
+      <% if params[:query].present? %>
+        <%= link_to "Сбросить", root_path(feed_scope: params[:feed_scope], sort: params[:sort]), 
+                    style: "background: #e1e8ed; color: #555; padding: 12px 20px; border-radius: 25px; text-decoration: none; font-size: 1rem; font-weight: bold; display: flex; align-items: center;" %>
+      <% end %>
+    <% end %>
+
+    <%# --- ОТОБРАЖЕНИЕ РЕЗУЛЬТАТОВ ПОИСКА --- %>
+    <% if @search_results.present? %>
+      <div style="background: #fff; border: 1px solid #1da1f2; border-radius: 12px; padding: 15px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <h4 style="margin: 0 0 10px 0; color: #1da1f2; font-size: 0.95rem;">Найдено пользователей (<%= @search_results.size %>):</h4>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <% @search_results.each do |user| %>
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #f0f3f4; padding-bottom: 8px;">
+              
+              <%= link_to user_path(user), style: "display: flex; align-items: center; gap: 12px; text-decoration: none; color: black;" do %>
+                <% if user.avatar.attached? %>
+                  <%= image_tag user.avatar, style: "width: 35px; height: 35px; border-radius: 50%; object-fit: cover;" %>
+                <% else %>
+                  <div style="width: 35px; height: 35px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555; font-size: 0.85rem;">
+                    <%= user.username.first.upcase %>
+                  </div>
+                <% end %>
+                <span style="font-weight: bold;">@<%= user.username %></span>
+              <% end %>
+
+              <%# Кнопка быстрой подписки прямо из поиска %>
+              <% if user_signed_in? && user != current_user %>
+                <div>
+                  <% if current_user.following?(user) %>
+                    <span style="color: #666; font-size: 0.85rem; font-weight: bold; padding: 5px 10px; background: #eee; border-radius: 15px;">Вы подписаны</span>
+                  <% else %>
+                    <%= link_to "Подписаться", follow_user_path(user), data: { turbo_method: :post }, 
+                                style: "background: #1da1f2; color: white; padding: 5px 12px; border-radius: 15px; text-decoration: none; font-size: 0.85rem; font-weight: bold;" %>
+                  <% end %>
+                </div>
+              <% end %>
+
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% elsif params[:query].present? %>
+      <div style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 12px; padding: 12px; margin-top: 10px; font-size: 0.95rem;">
+        Пользователи с именем "<%= params[:query] %>" не найдены.
+      </div>
+    <% end %>
+  </div>
+
       <%= form_with model: @post, url: posts_path do |f| %>
         <div style="margin-bottom: 15px;">
           <%= f.text_area :content,
@@ -38,6 +99,65 @@
         <%= link_to "Войти", new_user_session_path, style: "margin-right: 10px;" %>
         <%= link_to "Регистрация", new_user_registration_path %>
       </div>
+    </div>
+  <% end %>
+
+  <%# --- БЛОК ФИЛЬТРОВ И СОРТИРОВКИ --- %>
+  <div style="background: #f9f9f9; border: 1px solid #ccc; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-family: sans-serif; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+    
+    <%# Левая часть: Переключение ленты (Все / Подписки) %>
+    <div style="display: flex; gap: 10px;">
+      <%= link_to "Все посты", root_path(sort: params[:sort]), 
+                  style: "text-decoration: none; padding: 6px 12px; border-radius: 15px; font-size: 0.9rem; font-weight: bold; #{params[:feed_scope] != 'following' ? 'background: #1da1f2; color: white;' : 'background: #e1e8ed; color: #555;'}" %>
+      
+      <% if user_signed_in? %>
+        <%= link_to "Мои подписки", root_path(feed_scope: 'following', sort: params[:sort]), 
+                    style: "text-decoration: none; padding: 6px 12px; border-radius: 15px; font-size: 0.9rem; font-weight: bold; #{params[:feed_scope] == 'following' ? 'background: #1da1f2; color: white;' : 'background: #e1e8ed; color: #555;'}" %>
+      <% end %>
+    </div>
+
+    <%# Правая часть: Сортировка по времени %>
+    <div style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: #555;">
+      <span>Сортировка:</span>
+      <%= link_to "Сначала новые", root_path(feed_scope: params[:feed_scope], sort: 'new'), 
+                  style: "text-decoration: none; font-weight: #{params[:sort] != 'old' ? 'bold' : 'normal'}; color: #{params[:sort] != 'old' ? '#1da1f2' : '#555'};" %>
+      |
+      <%= link_to "Сначала старые", root_path(feed_scope: params[:feed_scope], sort: 'old'), 
+                  style: "text-decoration: none; font-weight: #{params[:sort] == 'old' ? 'bold' : 'normal'}; color: #{params[:sort] == 'old' ? '#1da1f2' : '#555'};" %>
+    </div>
+
+  </div>
+
+  <%# --- СПИСОК ТЕХ, НА КОГО ПОДПИСАН (Только во вкладке "Мои подписки") --- %>
+  <% if params[:feed_scope] == 'following' && user_signed_in? %>
+    <div style="background: #ffffff; border: 1px solid #ccc; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-family: sans-serif;">
+      <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 1rem; color: #111;">Вы подписаны на:</h3>
+      
+      <% if @following_users.any? %>
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px;">
+          <% @following_users.each do |user| %>
+            <%= link_to user_path(user), style: "text-decoration: none; text-align: center; display: flex; flex-direction: column; align-items: center; width: 70px;" do %>
+              
+              <%# Аватарка пользователя %>
+              <% if user.avatar.attached? %>
+                <%= image_tag user.avatar, style: "width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #1da1f2;" %>
+              <% else %>
+                <div style="width: 45px; height: 45px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #555; border: 2px solid #1da1f2;">
+                  <%= user.username.first.upcase if user.username.present? %>
+                </div>
+              <% end %>
+              
+              <%# Имя пользователя %>
+              <span style="font-size: 0.75rem; color: #555; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; width: 100%; margin-top: 4px;">
+                @<%= user.username %>
+              </span>
+              
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <p style="color: #666; font-size: 0.9rem; margin: 0;">Вы пока ни на кого не подписались.</p>
+      <% end %>
     </div>
   <% end %>
 

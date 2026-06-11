@@ -15,7 +15,7 @@ class CommentsController < ApplicationController
   end
 
   def destroy
-    if @comment.user == current_user || @post.user == current_user
+    if @comment.user == current_user || @post.user == current_user || current_user.admin?
       @comment.destroy
       redirect_to post_path(@post), notice: "Комментарий удален.", status: :see_other
     else
