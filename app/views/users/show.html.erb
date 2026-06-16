@@ -1,104 +1,146 @@
-<div style="max-width: 700px; margin: 30px auto; padding: 0 15px;">
-  <div style="border: 1px solid #ccc; padding: 20px; margin-bottom: 25px; border-radius: 10px; background: #f9f9f9;">
-    
-    <%# --- ЭТОТ БЛОК ОТВЕЧАЕТ ЗА ШАПКУ ПРОФИЛЯ (Аватарка + Имя + Кнопка) --- %>
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;">
-      
-      <%# Левая часть: Аватарка и текстовые данные %>
-      <div style="display: flex; align-items: center; gap: 20px;">
-        <% if @user.avatar.attached? %>
-          <%# Если аватарка загружена — показываем её %>
-          <%= image_tag @user.avatar, style: "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc; flex-shrink: 0;" %>
-        <% else %>
-          <%# Если аватарки нет — показываем серую заглушку с первой буквой ника %>
-          <div style="width: 100px; height: 100px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; color: #777; border: 2px solid #ccc; flex-shrink: 0;">
-            <%= @user.username.first.upcase %>
-          </div>
-        <% end %>
+<%# app/views/users/show.html.erb %>
 
-        <div>
-          <h1 style="margin: 0 0 5px 0;">@<%= @user.username %></h1>
-          <p style="margin: 0; color: #666;"><%= @user.email %></p>
+<div class="max-w-2xl mx-auto px-4 py-6 font-sans">
+  
+  <% if @user.nil? %>
+    <%# --- СОСТОЯНИЕ: ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН --- %>
+    <div class="max-w-2xl mx-auto px-4 py-16 text-center">
+      <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <svg class="w-7 h-7 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-slate-900 mb-2">User not found</h2>
+      <p class="text-slate-500 text-sm mb-4">
+        The profile doesn't exist or has been removed.
+      </p>
+      <%= link_to "Back to feed", root_path, class: "inline-block px-4 py-2 bg-blue-600 text-white rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors" %>
+    </div>
+  <% else %>
+
+    <%# --- КАРТОЧКА ПРОФИЛЯ --- %>
+    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-4 shadow-sm">
+      
+      <%# Шапка-обложка с градиентом %>
+      <div class="h-32 bg-gradient-to-r from-blue-500 to-blue-700 relative">
+        <div class="absolute bottom-0 left-6 translate-y-1/2">
+          <% if @user.avatar.attached? %>
+            <%= image_tag @user.avatar, class: "w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg" %>
+          <% else %>
+            <div class="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-2xl border-4 border-white shadow-lg">
+              <%= @user.username.first.upcase %>
+            </div>
+          <% end %>
         </div>
       </div>
 
-      <%# --- БЛОК МОДЕРАЦИИ ПРОФИЛЯ ДЛЯ АДМИНИСТРАТОРА --- %>
-<% if user_signed_in? && current_user.admin? && current_user != @user %>
-  <div style="margin-top: 15px; padding: 10px; border: 1px dashed #e57373; border-radius: 8px; background: #fdfcea; display: inline-block;">
-    <span style="font-size: 0.85rem; color: #e57373; font-weight: bold; display: block; margin-bottom: 8px;">Модерация аккаунта:</span>
-    
-    <%= link_to "Удалить этот аккаунт навсегда", admin_user_path(@user), 
-                data: { turbo_method: :delete, turbo_confirm: "Вы уверены, что хотите НАВСЕГДА удалить пользователя @#{@user.username} и все его данные (посты, комментарии, лайки)?" }, 
-                style: "background: #e57373; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-size: 0.9rem; font-weight: bold; display: inline-block; box-shadow: 0 2px 4px rgba(229,115,115,0.3);" %>
-  </div>
+      <%# Информация о пользователе %>
+      <div class="pt-14 px-6 pb-6">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">
+              <%= @user.respond_to?(:name) && @user.name.present? ? @user.name : "@#{@user.username}" %>
+            </h2>
+            <p class="text-slate-400 text-sm">@<%= @user.username %></p>
+          </div>
+          
+<%# Кнопки действий (Редактировать или Подписаться/Отписаться) %>
+<% if user_signed_in? %>
+  <% if current_user == @user %>
+    <%= link_to edit_user_path(@user), class: "flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-full text-sm text-slate-700 hover:bg-slate-50 transition-colors font-semibold shadow-sm" do %>
+      <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Настройки
+    <% end %>
+  <% else %>
+    <% if current_user.following?(@user) %>
+      <%# --- Кнопка "Отписаться": используем метод :delete и роут unfollow --- %>
+      <%= link_to unfollow_user_path(@user), 
+                  data: { turbo_method: :delete }, 
+                  class: "px-5 py-2 rounded-full text-sm font-semibold transition-colors border border-slate-300 text-slate-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50" do %>
+        Вы подписаны
+      <% end %>
+    <% else %>
+      <%# --- Кнопка "Подписаться": используем метод :post и роут follow --- %>
+      <%= link_to follow_user_path(@user), 
+                  data: { turbo_method: :post }, 
+                  class: "px-5 py-2 rounded-full text-sm font-semibold transition-colors bg-blue-600 text-white hover:bg-blue-700" do %>
+        Подписаться
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>
+        </div>
 
-<%# Правая часть: Кнопка редактирования ИЛИ Подписки %>
-      <div>
-        <% if @user == current_user %>
-          <%= link_to "Редактировать профиль", edit_user_path(@user), style: "background: #1da1f2; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
-        <% elsif user_signed_in? %>
-          <% if current_user.following?(@user) %>
-            <%= link_to "Отписаться", unfollow_user_path(@user), data: { turbo_method: :delete }, style: "background: #e57373; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
-          <% else %>
-            <%= link_to "Подписаться", follow_user_path(@user), data: { turbo_method: :post }, style: "background: #1da1f2; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: bold;" %>
-          <% end %>
+        <%# Биография пользователя %>
+        <% if @user.respond_to?(:bio) && @user.bio.present? %>
+          <p class="text-slate-700 mt-3 text-sm md:text-base leading-relaxed"><%= @user.bio %></p>
         <% end %>
-      </div>
-    </div> <%# Контурный тег закрывает flex-блок шапки (исправлено!) %>
 
-    <%# --- БЛОК О СЕБЕ --- %>
-    <div style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
-      <h2 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #333;">О себе</h2>
-      <p style="margin: 0; line-height: 1.5; color: #444;">
-        <%= @user.bio.present? ? @user.bio : "Пользователь пока не добавил описание." %>
-      </p>
+        <%# Метаданные (Дата регистрации и системные роли) %>
+        <div class="flex items-center gap-4 mt-4 text-slate-400 text-sm">
+          <span class="flex items-center gap-1 text-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Joined <%= @user.created_at.strftime('%B %Y') %>
+          </span>
+          <% if @user.respond_to?(:admin?) && @user.admin? %>
+            <span class="bg-blue-100 text-blue-700 text-[11px] px-2 py-0.5 rounded-full font-semibold">
+              Admin
+            </span>
+          <% end %>
+        </div>
+
+        <%# Блок кастомных счетчиков %>
+        <div class="flex gap-8 mt-4 pt-4 border-t border-slate-100">
+          <div class="text-left">
+            <p class="font-bold text-slate-900 text-base"><%= @user.posts.count %></p>
+            <p class="text-slate-400 text-xs tracking-wide uppercase">Posts</p>
+          </div>
+          <div class="text-left">
+            <p class="font-bold text-slate-900 text-base"><%= @user.respond_to?(:followers) ? @user.followers.count : 0 %></p>
+            <p class="text-slate-400 text-xs tracking-wide uppercase">Followers</p>
+          </div>
+          <div class="text-left">
+            <p class="font-bold text-slate-900 text-base"><%= @user.respond_to?(:following) ? @user.following.count : 0 %></p>
+            <p class="text-slate-400 text-xs tracking-wide uppercase">Following</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div> <%# Закрывает серую карточку профиля %>
+    <%# --- ЛЕНТА ПОСТОВ КОНКРЕТНОГО ПОЛЬЗОВАТЕЛЯ --- %>
+    <div class="space-y-3 mt-6">
+      <div class="flex items-center gap-2 px-1">
+        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h3 class="text-base font-bold text-slate-900">Posts</h3>
+        <span class="text-slate-400 text-sm font-normal">(<%= @user.posts.count %>)</span>
+      </div>
 
-<%# --- ЛЕНТА ПОСТОВ ПОЛЬЗОВАТЕЛЯ --- %>
-  <div>
-    <h2 style="margin-bottom: 15px;">Посты пользователя</h2>
-
-    <% if @posts.any? %>
-      <%= render @posts %>
-
-      <%# --- БЛОК ПАГИНАЦИИ В ПРОФИЛЕ --- %>
-      <div style="margin-top: 30px; margin-bottom: 30px; display: flex; justify-content: center; font-family: sans-serif;">
-        <div class="pagination-container" style="display: flex; gap: 8px; align-items: center;">
-          <%= paginate @posts, window: 2 %>
+      <% user_posts = @user.posts.order(created_at: :desc) %>
+      <% if user_posts.any? %>
+        <%# Используем наш новый красивый partial для рендера постов %>
+        <%= render user_posts %>
+      <% else %>
+        <%# Заглушка, если постов нет %>
+        <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center shadow-sm">
+          <div class="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h4 class="text-slate-900 font-bold mb-1">No posts yet</h4>
+          <p class="text-slate-500 text-sm">
+            <%= current_user == @user ? "Share your first thought on the main feed!" : "@#{@user.username} hasn't posted anything yet." %>
+          </p>
         </div>
-      </div>
-      
-      <%# Стили для кнопок (если они еще не добавлены в общий CSS) %>
-      <style>
-        .pagination-container a, .pagination-container .current {
-          padding: 8px 14px;
-          border: 1px solid #ccc;
-          border-radius: 20px;
-          text-decoration: none;
-          color: #1da1f2;
-          font-weight: bold;
-          font-size: 0.9rem;
-        }
-        .pagination-container .current {
-          background: #1da1f2;
-          color: white;
-          border-color: #1da1f2;
-        }
-        .pagination-container .disabled, .pagination-container .gap {
-          padding: 8px 14px;
-          color: #999;
-          font-size: 0.9rem;
-        }
-      </style>
-      <%# -------------------------------- %>
+      <% end %>
+    </div>
 
-    <% else %>
-      <div style="text-align: center; padding: 30px 0; color: #666;">
-        <p>У пользователя пока нет постов</p>
-      </div>
-    <% end %>
-  </div>
+  <% end %>
 </div>

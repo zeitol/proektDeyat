@@ -1,46 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html class="bg-slate-50">
   <head>
-    <title>Наш проект</title>
+    <title>Ribbon</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body style="margin: 0; font-family: Arial, sans-serif; background: #f5f5f5;">
-    <div style="display: flex; min-height: 100vh;">
+  <body class="min-h-screen font-sans text-slate-900 antialiased selection:bg-blue-500 selection:text-white">
+    
+    <%# Этот контейнер ограничивает общую ширину (сайдбар + лента) и центрирует их на экране %>
+    <div class="max-w-6xl mx-auto flex justify-center min-h-screen">
 
-      <div style="width: 220px; background: white; border-right: 1px solid #ddd; padding: 20px; box-sizing: border-box;">
-        <div style="font-size: 32px; font-weight: bold; margin-bottom: 30px; text-align: center;">
-          Y
+      <%# --- СТИЛЬНЫЙ САЙДБАР (ЛЕВАЯ КОЛОНКА) --- %>
+      <aside class="w-64 h-screen sticky top-0 bg-white border-r border-slate-200 flex flex-col justify-between p-4 select-none flex-shrink-0">
+        
+        <div class="space-y-6">
+          <%# Логотип проекта %>
+          <div class="px-3 py-2 flex items-center gap-2.5">
+            <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm shadow-blue-500/20">
+              R
+            </div>
+            <span class="text-lg font-bold text-slate-900 tracking-tight">Ribbon</span>
+          </div>
+
+          <%# Навигация %>
+          <nav class="space-y-1">
+            <%# Главная лента %>
+            <%= link_to root_path, class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors group" do %>
+              <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+              Главная
+            <% end %>
+
+            <% if user_signed_in? %>
+              <%# Личный профиль %>
+              <%= link_to user_path(current_user), class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors group" do %>
+                <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                Профиль
+              <% end %>
+            <% else %>
+              <%# Кнопка Войти %>
+              <%= link_to new_user_session_path, class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors group" do %>
+                <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                </svg>
+                Войти
+              <% end %>
+
+              <%# Кнопка Регистрация %>
+              <%= link_to new_user_registration_path, class: "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors group" do %>
+                <svg class="w-5 h-5 text-slate-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+                Регистрация
+              <% end %>
+            <% end %>
+          </nav>
         </div>
 
-        <nav style="display: flex; flex-direction: column; gap: 10px;">
-          <%= link_to "Главная", root_path, style: "text-decoration: none; color: black; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa;" %>
+        <%# Нижняя плашка авторизованного юзера с кнопкой Выйти %>
+        <% if user_signed_in? %>
+          <div class="border-t border-slate-100 pt-4 space-y-2">
+            <div class="flex items-center gap-3 px-3 py-1.5">
+              <div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-xs text-slate-600 overflow-hidden flex-shrink-0">
+                <% if current_user.avatar.attached? %>
+                  <%= image_tag current_user.avatar, class: "w-full h-full object-cover" %>
+                <% else %>
+                  <%= current_user.username.first(2).upcase %>
+                <% end %>
+              </div>
+              <div class="min-w-0 truncate">
+                <p class="text-xs font-bold text-slate-900 truncate">
+                  <%= current_user.respond_to?(:name) && current_user.name.present? ? current_user.name : current_user.username %>
+                </p>
+                <p class="text-[11px] text-slate-400 truncate">@<%= current_user.username %></p>
+              </div>
+            </div>
 
-          <% if user_signed_in? %>
-            <%= link_to "Профиль", user_path(current_user), style: "text-decoration: none; color: black; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa;" %>
+            <%= button_to destroy_user_session_path, method: :delete, data: { turbo: false }, class: "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors group cursor-pointer text-left" do %>
+              <svg class="w-5 h-5 text-red-400 group-hover:text-red-500 transition-colors flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+              </svg>
+              Выйти
+            <% end %>
+          </div>
+        <% end %>
+      </aside>
 
-            <%= button_to "Выйти",
-              destroy_user_session_path,
-              method: :delete,
-              form: { style: "margin: 0; width: 100%;" },
-              style: "width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa; cursor: pointer; text-align: left; font-family: Arial, sans-serif; font-size: 16px; color: black;" %>
-          <% else %>
-            <%= link_to "Войти", new_user_session_path, style: "text-decoration: none; color: black; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa;" %>
-
-            <%= link_to "Регистрация", new_user_registration_path, style: "text-decoration: none; color: black; padding: 10px; border: 1px solid #ddd; border-radius: 8px; background: #fafafa;" %>
-          <% end %>
-        </nav>
-      </div>
-
-      <div style="flex: 1; padding: 30px;">
-        <div style="background: white; border: 1px solid #ddd; border-radius: 10px; padding: 20px; min-height: calc(100vh - 60px);">
+      <%# --- ОБЛАСТЬ ДИНАМИЧЕСКОГО КОНТЕНТА (ПРАВАЯ КОЛОНКА) --- %>
+      <main class="flex-1 max-w-4xl min-w-0">
+        <div class="px-6 py-6">
           <%= yield %>
         </div>
-      </div>
+      </main>
 
     </div>
   </body>

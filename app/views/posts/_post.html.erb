@@ -1,95 +1,111 @@
 <%# app/views/posts/_post.html.erb %>
 
-<div style="display: flex; gap: 12px; padding: 15px; border-bottom: 1px solid #eee; background: white; border-radius: 8px; margin-bottom: 10px; font-family: sans-serif;">
-  
-  <%# 1. КОЛОНКА С АВАТАРКОЙ %>
-  <div style="flex-shrink: 0;">
-    <%= link_to user_path(post.user) do %>
-      <% if post.user.avatar.attached? %>
-        <%= image_tag post.user.avatar, style: "width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;" %>
-      <% else %>
-        <div style="width: 40px; height: 40px; border-radius: 50%; background: #e1e8ed; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold; color: #777; border: 1px solid #eee;">
-          <%= post.user.username.first.upcase %>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
-
-  <%# 2. КОЛОНКА С ТЕКСТОМ ПОСТА %>
-  <div style="flex-grow: 1;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-      <div style="display: flex; align-items: center; gap: 5px;">
-        <%= link_to user_path(post.user), style: "text-decoration: none; color: black; font-weight: bold;" do %>
-          @<%= post.user.username %>
+<div class="bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 transition-colors font-sans">
+  <div class="flex gap-3">
+    
+    <%# 1. АВАТАРКА ПОЛЬЗОВАТЕЛЯ %>
+    <div class="flex-shrink-0">
+      <%= link_to user_path(post.user) do %>
+        <% if post.user.avatar.attached? %>
+          <%= image_tag post.user.avatar, class: "w-10 h-10 rounded-full object-cover border border-slate-100" %>
+        <% else %>
+          <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600 text-sm border border-slate-100">
+            <%= post.user.username.first.upcase %>
+          </div>
         <% end %>
-        <span style="color: #666; font-size: 0.9rem;">
-          · <%= time_ago_in_words(post.created_at) %> назад
-        </span>
+      <% end %>
+    </div>
+
+    <%# 2. ТЕЛО КАРТОЧКИ %>
+    <div class="flex-1 min-w-0">
+      
+      <%# Шапка поста: Имя, Юзернейм, Дата и Управление %>
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center gap-2 flex-wrap">
+          <%= link_to user_path(post.user), class: "font-semibold text-slate-900 hover:text-blue-600 transition-colors text-sm md:text-base" do %>
+            <%= post.user.respond_to?(:name) && post.user.name.present? ? post.user.name : "@#{post.user.username}" %>
+          <% end %>
+          <span class="text-slate-400 text-sm">@<%= post.user.username %></span>
+          <span class="text-slate-300 text-sm">·</span>
+          <span class="text-slate-400 text-sm" title="<%= post.created_at.strftime('%d.%m.%Y %H:%M') %>">
+            <%= time_ago_in_words(post.created_at) %> назад
+          </span>
+        </div>
+
+        <%# Кнопки управления (Удалить/Редактировать/Модерация) %>
+        <% if user_signed_in? %>
+          <div class="flex items-center gap-2 text-xs">
+            <% if post.user == current_user %>
+              <%= link_to edit_post_path(post), class: "text-blue-600 hover:underline font-medium" do %>
+                Edit
+              <% end %>
+            <% end %>
+
+            <% if post.user == current_user || current_user.admin? %>
+              <% is_moderation = current_user.admin? && post.user != current_user %>
+              
+              <%= link_to post_path(post), 
+                          data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this post?" }, 
+                          class: "text-red-500 hover:text-red-700 font-medium" do %>
+                Delete
+              <% end %>
+              
+              <% if is_moderation %>
+                <span class="bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-md font-bold text-[10px]">Moderation</span>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
       </div>
 
-<%# Кнопки управления для автора и администратора %>
-      <% if user_signed_in? %>
-        <div style="display: flex; gap: 10px; font-size: 0.85rem; align-items: center;">
+      <%# Текст поста (Кликабельный, ведет на страницу поста с комментариями) %>
+      <%= link_to post_path(post), class: "block no-underline" do %>
+        <p class="text-slate-700 mt-2 leading-relaxed text-sm md:text-base break-words">
+          <%= post.respond_to?(:content) ? post.content : post.body %>
+        </p>
+      <% end %>
+
+      <%# НИЖНЯЯ ПАНЕЛЬ: Лайки и Комментарии %>
+      <div class="flex items-center gap-6 mt-4">
+        
+        <%# Блок лайков %>
+        <% if user_signed_in? %>
+          <% liked = post.likes.any? { |l| l.user_id == current_user.id } %>
           
-          <%# Редактировать может ТОЛЬКО автор поста %>
-          <% if post.user == current_user %>
-            <%= link_to "Редактировать", edit_post_path(post), style: "color: #1da1f2; text-decoration: none;" %>
-          <% end %>
-
-          <%# Удалить может либо автор, либо администратор %>
-          <% if post.user == current_user || current_user.admin? %>
-            <%# ИСПРАВЛЕНО: Вынесли определение стиля в обычную Ruby-переменную, без вложенных тегов %>
-            <% is_moderation = current_user.admin? && post.user != current_user %>
-            <% font_weight = is_moderation ? 'bold' : 'normal' %>
-
-            <%= link_to "Удалить", post_path(post), 
-                        data: { turbo_method: :delete, turbo_confirm: "Вы уверены, что хотите удалить этот пост?" }, 
-                        style: "color: #e57373; text-decoration: none; font-weight: #{font_weight};" %>
-            
-            <%# Маленькая красная плашка-индикатор для админа, если пост чужой %>
-            <% if is_moderation %>
-              <span style="background: #fdecea; color: #e57373; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold;">Модерация</span>
+          <% if liked %>
+            <%= link_to post_like_path(post, id: 0), data: { turbo_method: :delete }, class: "flex items-center gap-1.5 text-sm font-medium transition-colors text-red-500" do %>
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span><%= post.likes.count %></span>
+            <% end %>
+          <% else %>
+            <%= link_to post_likes_path(post), data: { turbo_method: :post }, class: "flex items-center gap-1.5 text-sm transition-colors text-slate-400 hover:text-red-500" do %>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+              <span><%= post.likes.count %></span>
             <% end %>
           <% end %>
-
-        </div>
-      <% end %>
-    </div>
-
-    <%# Кликабельный текст поста, ведущий на отдельную страницу %>
-    <%= link_to post_path(post), style: "text-decoration: none; color: #333;" do %>
-      <div style="line-height: 1.4; word-break: break-word; margin-bottom: 10px;">
-        <%= post.content %>
-      </div>
-    <% end %>
-
-<%# Блок кнопок: Лайки и Комментарии %>
-    <div style="display: flex; gap: 20px; margin-top: 10px;">
-      
-      <%# 1. Кнопка Лайка (теперь слева) %>
-      <% if user_signed_in? %>
-        <% liked = post.likes.any? { |l| l.user_id == current_user.id } %>
-        
-        <% if liked %>
-          <%= link_to post_like_path(post, id: 0), data: { turbo_method: :delete }, style: "text-decoration: none; color: #e0245e; font-size: 0.9rem; display: flex; align-items: center; gap: 4px; font-weight: bold;" do %>
-            ❤️ <%= post.likes.count %>
-          <% end %>
         <% else %>
-          <%= link_to post_likes_path(post), data: { turbo_method: :post }, style: "text-decoration: none; color: #657786; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;" do %>
-            🤍 <%= post.likes.count %>
-          <% end %>
+          <div class="flex items-center gap-1.5 text-sm text-slate-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+            <span><%= post.likes.count %></span>
+          </div>
         <% end %>
-      <% else %>
-        <span style="color: #657786; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;">
-          🤍 <%= post.likes.count %>
-        </span>
-      <% end %>
 
-      <%# 2. Ссылка на комментарии (теперь справа) %>
-      <%= link_to post_path(post), style: "text-decoration: none; color: #657786; font-size: 0.9rem; display: flex; align-items: center; gap: 4px;" do %>
-        💬 <%= post.comments.count %>
-      <% end %>
+        <%# Ссылка на комментарии %>
+        <%= link_to post_path(post), class: "flex items-center gap-1.5 text-sm text-slate-400 hover:text-blue-500 transition-colors" do %>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+          <span><%= post.comments.count %></span>
+        <% end %>
+
+      </div>
+
     </div>
   </div>
-
 </div>
