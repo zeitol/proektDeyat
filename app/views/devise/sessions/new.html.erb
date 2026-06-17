@@ -41,7 +41,7 @@
   <% end %>
 </div>
     
-    <p class="text-slate-500 text-sm">© 2026 Ribbon. Student project.</p>
+    <p class="text-slate-500 text-sm">© 2026 Ribbon. Студенческий проект.</p>
   </div>
 
   <%# --- ПРАВАЯ ПАНЕЛЬ С ФОРМОЙ ВХОДА --- %>
@@ -57,8 +57,8 @@
       </div>
 
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900 mb-1">Welcome back</h1>
-        <p class="text-slate-500 text-sm">Sign in to your Ribbon account.</p>
+        <h1 class="text-2xl font-bold text-slate-900 mb-1">С возвращением</h1>
+        <p class="text-slate-500 text-sm">Войдите в свой аккаунт Ribbon.</p>
       </div>
 
       <%# --- ВЫВОД ОШИБОК ДЕВАЙЗА --- %>
@@ -76,7 +76,7 @@
         
         <%# Email Поле %>
         <div>
-          <%= f.label :email, "Email address", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+          <%= f.label :email, "Электронная почта", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -94,10 +94,8 @@
         <%# Password Поле %>
         <div>
           <div class="flex items-center justify-between mb-1.5">
-            <%= f.label :password, "Password", class: "text-sm font-medium text-slate-700" %>
-<% if devise_mapping.recoverable? %>
-  <%= link_to "Forgot password?", new_password_path(resource_name), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
-<% end %>
+            <%= f.label :password, "Пароль", class: "text-sm font-medium text-slate-700" %>
+
           </div>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -107,7 +105,7 @@
             </div>
             <%= f.password_field :password, 
                                  autocomplete: "current-password", 
-                                 placeholder: "Enter your password",
+                                 placeholder: "Введите ваш пароль",
                                  class: "w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl bg-white outline-none transition-colors text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm" %>
           </div>
         </div>
@@ -116,18 +114,18 @@
         <% if devise_mapping.rememberable? %>
           <div class="flex items-center gap-2 py-1 select-none">
             <%= f.check_box :remember_me, class: "w-4 h-4 text-blue-600 border-slate-200 rounded focus:ring-blue-500 cursor-pointer" %>
-            <%= f.label :remember_me, "Remember me on this device", class: "text-xs text-slate-600 font-medium cursor-pointer" %>
+            <%= f.label :remember_me, "Запомнить меня на этом устройстве", class: "text-xs text-slate-600 font-medium cursor-pointer" %>
           </div>
         <% end %>
 
         <%# Кнопка отправки %>
-        <%= f.submit "Sign In", class: "w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer text-sm" %>
+        <%= f.submit "Войти", class: "w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer text-sm" %>
       <% end %>
 
       <%# Ссылка на регистрацию %>
       <p class="text-center text-sm text-slate-500 mt-6">
-        Don't have an account?{" "}
-        <%= link_to "Create one", new_registration_path(resource_name), class: "text-blue-600 hover:text-blue-700 font-semibold" %>
+        Нет аккаунта?{" "}
+        <%= link_to "Создать", new_registration_path(resource_name), class: "text-blue-600 hover:text-blue-700 font-semibold" %>
       </p>
 
     </div>

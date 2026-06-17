@@ -8,7 +8,7 @@ resources :posts, only: [:index, :create, :edit, :update, :destroy, :show] do
   resources :likes, only: [:create, :destroy]
 end
   #resources :posts, only: [:index, :create, :edit, :update, :destroy]
-resources :users, only: [:show, :edit, :update] do
+resources :users, only: [:show, :edit, :update, :destroy] do
     member do
       post 'follow', to: 'users#follow', as: :follow
       delete 'unfollow', to: 'users#unfollow', as: :unfollow

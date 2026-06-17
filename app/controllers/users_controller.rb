@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update]
   # Проверяем, что текущий залогиненный юзер редактирует именно себя
   before_action :ensure_correct_user, only: [:edit, :update]
+  before_action :ensure_admin, only: [:destroy]
 
   def show
     @posts = @user.posts
@@ -37,6 +38,12 @@ class UsersController < ApplicationController
     redirect_to user_path(@user), notice: "Вы отписались от @#{@user.username}"
   end
 
+def destroy
+  @user = User.find(params[:id])
+  @user.destroy
+  redirect_to root_path, notice: "Пользователь был успешно удален."
+end
+
   private
 
 def set_user
@@ -52,6 +59,12 @@ def set_user
   def ensure_correct_user
     unless current_user == @user
       redirect_to root_path, alert: "У вас нет прав для редактирования этого профиля."
+    end
+  end
+
+  def ensure_admin
+    unless current_user.admin?
+      redirect_to root_path, alert: "У вас нет прав администратора."
     end
   end
 

@@ -37,7 +37,7 @@
           <div class="flex items-center gap-2 text-xs">
             <% if post.user == current_user %>
               <%= link_to edit_post_path(post), class: "text-blue-600 hover:underline font-medium" do %>
-                Edit
+                Изменить
               <% end %>
             <% end %>
 
@@ -45,13 +45,13 @@
               <% is_moderation = current_user.admin? && post.user != current_user %>
               
               <%= link_to post_path(post), 
-                          data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this post?" }, 
+                          data: { turbo_method: :delete, turbo_confirm: "Вы уверены, что хотите удалить этот пост?" }, 
                           class: "text-red-500 hover:text-red-700 font-medium" do %>
-                Delete
+                Удалить
               <% end %>
               
               <% if is_moderation %>
-                <span class="bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-md font-bold text-[10px]">Moderation</span>
+                <span class="bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-md font-bold text-[10px]">Модерация</span>
               <% end %>
             <% end %>
           </div>

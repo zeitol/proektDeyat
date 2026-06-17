@@ -1,0 +1,126 @@
+ru:
+  date:
+    formats:
+      default: "%d.%m.%Y"
+      long: "%d %B %Y"
+      short: "%d %b"
+  time:
+    formats:
+      default: "%d.%m.%Y %H:%M"
+      long: "%d %B %Y, %H:%M"
+      short: "%d %b, %H:%M"
+  datetime:
+    distance_in_words:
+      half_a_minute: "менее минуты"
+      less_than_x_seconds:
+        one: "менее %{count} секунды"
+        few: "менее %{count} секунд"
+        many: "менее %{count} секунд"
+        other: "менее %{count} секунд"
+      x_seconds:
+        one: "%{count} секунду"
+        few: "%{count} секунды"
+        many: "%{count} секунд"
+        other: "%{count} секунд"
+      less_than_x_minutes:
+        one: "менее %{count} минуты"
+        few: "менее %{count} минут"
+        many: "менее %{count} минут"
+        other: "менее %{count} минут"
+      x_minutes:
+        one: "%{count} минуту"
+        few: "%{count} минуты"
+        many: "%{count} минут"
+        other: "%{count} минут"
+      about_x_hours:
+        one: "около %{count} часа"
+        few: "около %{count} часов"
+        many: "около %{count} часов"
+        other: "около %{count} часов"
+      x_hours:
+        one: "%{count} час"
+        few: "%{count} часа"
+        many: "%{count} часов"
+        other: "%{count} часов"
+      x_days:
+        one: "%{count} день"
+        few: "%{count} дня"
+        many: "%{count} дней"
+        other: "%{count} дней"
+      about_x_months:
+        one: "около %{count} месяца"
+        few: "около %{count} месяцев"
+        many: "около %{count} месяцев"
+        other: "около %{count} месяцев"
+      x_months:
+        one: "%{count} месяц"
+        few: "%{count} месяца"
+        many: "%{count} месяцев"
+        other: "%{count} месяцев"
+      about_x_years:
+        one: "около %{count} года"
+        few: "около %{count} лет"
+        many: "около %{count} лет"
+        other: "около %{count} лет"
+      over_x_years:
+        one: "более %{count} года"
+        few: "более %{count} лет"
+        many: "более %{count} лет"
+        other: "более %{count} лет"
+      almost_x_years:
+        one: "почти %{count} год"
+        few: "почти %{count} года"
+        many: "почти %{count} лет"
+        other: "почти %{count} лет"
+  helpers:
+    submit:
+      create: "Создать"
+      update: "Сохранить"
+      submit: "Отправить"
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "Возникли ошибки: %{errors}"
+        taken: "уже занято"
+        blank: "не может быть пустым"
+        too_short: "слишком короткий (минимум %{count} символов)"
+        too_long: "слишком длинный (максимум %{count} символов)"
+        confirmation: "не совпадает"
+        invalid: "некорректный"
+    models:
+      user:
+        one: "Пользователь"
+        few: "Пользователя"
+        many: "Пользователей"
+        other: "Пользователя"
+      post:
+        one: "Публикация"
+        few: "Публикации"
+        many: "Публикаций"
+        other: "Публикации"
+      comment:
+        one: "Комментарий"
+        few: "Комментария"
+        many: "Комментариев"
+        other: "Комментария"
+    attributes:
+      user:
+        username: "Имя пользователя"
+        email: "Электронная почта"
+        password: "Пароль"
+        password_confirmation: "Подтверждение пароля"
+        avatar: "Аватарка"
+        bio: "О себе"
+      post:
+        content: "Содержание"
+        body: "Содержание"
+      comment:
+        body: "Комментарий"
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      not_saved:
+        one: "%{count} ошибка не позволила сохранить %{resource}:"
+        few: "%{count} ошибки не позволили сохранить %{resource}:"
+        many: "%{count} ошибок не позволили сохранить %{resource}:"
+        other: "%{count} ошибок не позволили сохранить %{resource}:"

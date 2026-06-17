@@ -2,32 +2,37 @@
 
 <div class="min-h-screen bg-slate-50 flex font-sans">
   
-  <%# --- ЛЕВАЯ ДЕКОРАТИВНАЯ ПАНЕЛЬ (Показывается только от lg:) --- %>
-  <div class="hidden lg:flex w-1/2 bg-blue-600 flex-col justify-between p-12 select-none">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm shadow-sm">
-        <span class="text-white font-bold text-lg">Rb</span>
-      </div>
-      <span class="text-white font-bold text-xl tracking-wide">Ribbon</span>
+<%# --- ЛЕВАЯ ДЕКОРАТИВНАЯ ПАНЕЛЬ --- %>
+<%# Добавили h-full для фиксации высоты и заменили justify-between на flex-col + gap %>
+<div class="hidden lg:flex w-1/2 bg-blue-600 flex-col justify-center p-12 select-none h-screen sticky top-0">
+  
+  <%# Логотип (отступ снизу) %>
+  <div class="flex items-center gap-3 mb-12">
+    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm shadow-sm">
+      <span class="text-white font-bold text-lg">Rb</span>
     </div>
-    
-    <div>
-      <h1 class="text-white text-4xl font-extrabold leading-snug mb-4">
-        Share your thoughts with the world.
-      </h1>
-      <p class="text-blue-100 text-lg leading-relaxed font-light">
-        A text-first social platform built for developers, students, and curious minds.
-      </p>
-    </div>
-    
-    <div class="flex gap-4">
-      <% ["Share ideas", "Follow people", "Build community"].map do |t| %>
-        <div class="bg-white/10 text-white text-sm px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm font-medium">
-          <%= t %>
-        </div>
-      <% end %>
-    </div>
+    <span class="text-white font-bold text-xl tracking-wide">Ribbon</span>
   </div>
+    
+  <%# Основной контент (отступ снизу) %>
+  <div class="mb-12">
+    <h1 class="text-white text-4xl font-extrabold leading-snug mb-4">
+      Делитесь своими мыслями со всем миром.
+    </h1>
+    <p class="text-blue-100 text-lg leading-relaxed font-light">
+      Текстовая социальная платформа для разработчиков, студентов и любознательных умов.
+    </p>
+  </div>
+
+  <%# Теги %>
+  <div class="flex flex-wrap gap-3" style="margin-top: 20px;">
+    <% ["Делитесь идеями", "Подписывайтесь на людей", "Создавайте сообщество"].each do |t| %>
+      <div class="bg-white/10 text-white text-sm px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm font-medium">
+        <%= t %>
+      </div>
+    <% end %>
+  </div>
+</div>
 
   <%# --- ПРАВАЯ ПАНЕЛЬ С ФОРМОЙ РЕГИСТРАЦИИ --- %>
   <div class="flex-1 flex items-center justify-center p-8">
@@ -42,8 +47,8 @@
       </div>
 
       <div class="mb-8">
-        <h1 class="text-2xl font-bold text-slate-900 mb-1">Create your account</h1>
-        <p class="text-slate-500 text-sm">Join Ribbon and start sharing today.</p>
+        <h1 class="text-2xl font-bold text-slate-900 mb-1">Создайте аккаунт</h1>
+        <p class="text-slate-500 text-sm">Присоединяйтесь к Ribbon и начните делиться уже сегодня.</p>
       </div>
 
       <%# --- ОБРАБОТКА ОШИБОК ВАЛИДАЦИИ Devise --- %>
@@ -54,7 +59,7 @@
             <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
-            Please fix the following errors:
+            Пожалуйста, исправьте следующие ошибки:
           </div>
           <ul class="list-disc pl-5 text-xs space-y-0.5 text-red-600/90">
             <% resource.errors.full_messages.each do |message| %>
@@ -69,7 +74,7 @@
 
         <%# Поле: Username (Никнейм) %>
         <div>
-          <%= f.label :username, "Username", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+          <%= f.label :username, "Имя пользователя", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -78,14 +83,14 @@
             </div>
             <%= f.text_field :username, 
                              autofocus: true, 
-                             placeholder: "e.g. john_doe", 
+                             placeholder: "напр. ivan_petrov", 
                              class: "w-full pl-10 pr-4 py-2.5 border #{resource.errors[:username].any? ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-slate-200 focus:ring-blue-500 focus:border-blue-500'} rounded-xl bg-white outline-none transition-colors text-slate-900 placeholder-slate-400 focus:ring-1 text-sm" %>
           </div>
         </div>
 
         <%# Поле: Email address %>
         <div>
-          <%= f.label :email, "Email address", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+          <%= f.label :email, "Электронная почта", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -101,7 +106,7 @@
 
         <%# Поле: Password %>
         <div>
-          <%= f.label :password, "Password", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+          <%= f.label :password, "Пароль", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -110,14 +115,14 @@
             </div>
             <%= f.password_field :password, 
                                  autocomplete: "new-password", 
-                                 placeholder: "At least #{@minimum_password_length || 6} characters", 
+                                 placeholder: "Минимум #{@minimum_password_length || 6} символов", 
                                  class: "w-full pl-10 pr-4 py-2.5 border #{resource.errors[:password].any? ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-slate-200 focus:ring-blue-500 focus:border-blue-500'} rounded-xl bg-white outline-none transition-colors text-slate-900 placeholder-slate-400 focus:ring-1 text-sm" %>
           </div>
         </div>
 
         <%# Поле: Confirm password %>
         <div>
-          <%= f.label :password_confirmation, "Confirm password", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
+          <%= f.label :password_confirmation, "Подтвердите пароль", class: "block text-sm font-medium text-slate-700 mb-1.5" %>
           <div class="relative">
             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -126,19 +131,19 @@
             </div>
             <%= f.password_field :password_confirmation, 
                                  autocomplete: "new-password", 
-                                 placeholder: "Repeat your password", 
+                                 placeholder: "Повторите ваш пароль", 
                                  class: "w-full pl-10 pr-4 py-2.5 border #{resource.errors[:password_confirmation].any? ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-slate-200 focus:ring-blue-500 focus:border-blue-500'} rounded-xl bg-white outline-none transition-colors text-slate-900 placeholder-slate-400 focus:ring-1 text-sm" %>
           </div>
         </div>
 
         <%# Кнопка отправки %>
-        <%= f.submit "Create Account", class: "w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer text-sm mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
+        <%= f.submit "Создать аккаунт", class: "w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm cursor-pointer text-sm mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2" %>
       <% end %>
 
       <%# Ссылка на вход %>
       <p class="text-center text-sm text-slate-500 mt-6">
-        Already have an account?{" "}
-        <%= link_to "Sign in", new_session_path(resource_name), class: "text-blue-600 hover:text-blue-700 font-semibold" %>
+        Уже есть аккаунт?{" "}
+        <%= link_to "Войти", new_session_path(resource_name), class: "text-blue-600 hover:text-blue-700 font-semibold" %>
       </p>
 
     </div>
